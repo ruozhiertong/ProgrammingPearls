@@ -5,10 +5,10 @@
 *
 
 #增加指定扩展名文件和Makefile文件
+!*/
 !*.cpp
 !*.c
 !*.h
 !Makefile
-!makefile
 !makefile
 !README.md
