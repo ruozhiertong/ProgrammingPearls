@@ -16,7 +16,10 @@
 #define SHIFT 5
 #define MASK 0x1F
 
-int a[MAX/BITSPERWORD + 1];
+//int a[MAX/BITSPERWORD + 1];
+int *a;
+int len;
+int MAX_ONE;
 
 void setBit(int i)
 {
@@ -30,13 +33,13 @@ void clsBit(int i)
 
 void clearAllBit()
 {
-	for(int i = 0 ; i <= MAX; i++)
+	for(int i = 0 ; i <= MAX_ONE; i++)
 		clsBit(i);
 }
 
 int testBit(int i)
 {
-	return a[i >>SHIFT] & (1 << (i & MASK)) == 0? 0:1;
+	return (a[i >>SHIFT] & (1 << (i & MASK))) == 0? 0:1;
 }
 
 //注意由于 10^7 大于 1M*8 的bit位数。 所有要2趟算法。读两次文件。
@@ -56,6 +59,13 @@ int testBit(int i)
 int main()
 {
 
+	//因为最大内存为1MB。
+	if(MEMORY/4 < MAX/BITSPERWORD +1)
+        len = MEMORY/4;
+	else
+        len = MAX/BITSPERWORD +1;
+    
+    a = (int*)malloc(len * sizeof(int));
 	time_t start ,end;
 
 	start = time(NULL);
@@ -64,9 +74,11 @@ int main()
 
 	FILE * fpout = fopen(RESULTFILE, "w+");
 
-	int times = 2;
+	// int times = 2;
+	int times = (MAX/BITSPERWORD +1) / (MEMORY/4) + 1;
+	printf("%d\n", times);
 
-	int MAX_ONE = MAX /times;
+	MAX_ONE = MAX /times;
 
 
 	int data;
@@ -97,10 +109,11 @@ int main()
 	fclose(fp);
 	fclose(fpout);
 
+	free(a);
 
 	end = time(NULL);
 
-	printf("const %ld s\n", end - start);
+	printf("cost %ld s\n", end - start);
 
 	return 0;
 }
